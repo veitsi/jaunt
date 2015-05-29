@@ -25,7 +25,7 @@ public class Wiksurfer {
             try {
                 String href = "http://en.wiktionary.org/wiki/Category:English_uncountable_nouns";
 
-                for (i = 0;i<1; i++) {
+                for (i = 0;; i++) {
                     userAgent.visit(href);
                     href = userAgent.doc.getHyperlink("next page").getHref().replaceAll("amp;", "");
                     System.out.println("next page:" + href);
@@ -33,12 +33,11 @@ public class Wiksurfer {
                     elements = userAgent.doc.findEvery("<div class=mw-category-group>").findEach("<li>").findEach("<a>");
                     //System.out.println("Each a: " + elements.size() + elements);
                     for (Element el : elements) {           //iterate through Results
-                        wikiword = el.getText();
+                        wikiword = el.getText().replaceAll("amp;", "");
                         if (isGoodWord(wikiword)) {
                             pw.println(wikiword);
                             
                         }
-                        //System.out.println(el.getText()+"["+el.getText().split(" +").length+"]");         //print each element and its contents
                     }
                 }
             } catch (JauntException e) {
@@ -50,10 +49,6 @@ public class Wiksurfer {
         } catch (IOException ex) {
             Logger.getLogger(Wiksurfer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        finally {
-           
-        }
-
     }
 
     public static boolean isGoodWord(String s) {
