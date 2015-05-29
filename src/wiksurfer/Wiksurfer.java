@@ -14,7 +14,7 @@ public class Wiksurfer {
     }
 
     public static void surfPages() {
-        int i = 0;
+        int i = 0;//counter for number of processed pages
         UserAgent userAgent = new UserAgent();
         userAgent.settings.autoSaveAsHTML = true;  //change settings to autosave last visited page.
         Elements elements;
@@ -28,23 +28,24 @@ public class Wiksurfer {
                 for (i = 0;; i++) {
                     userAgent.visit(href);
                     href = userAgent.doc.getHyperlink("next page").getHref().replaceAll("amp;", "");
+                    //Jaunt has now a strange bug on processing strings, so the fragment replaceAll("amp;", "")
+                    //is devoted to fix this issue
                     System.out.println("next page:" + href);
 
                     elements = userAgent.doc.findEvery("<div class=mw-category-group>").findEach("<li>").findEach("<a>");
-                    //System.out.println("Each a: " + elements.size() + elements);
+                    //select all links which contan words we need
                     for (Element el : elements) {           //iterate through Results
                         wikiword = el.getText().replaceAll("amp;", "");
                         if (isGoodWord(wikiword)) {
                             pw.println(wikiword);
-                            
                         }
                     }
                 }
+
             } catch (JauntException e) {
                 System.err.println(e);
             } finally {
-                //System.out.println("final i" + i);
-                 pw.close();
+                pw.close();
             }
         } catch (IOException ex) {
             Logger.getLogger(Wiksurfer.class.getName()).log(Level.SEVERE, null, ex);
@@ -59,5 +60,4 @@ public class Wiksurfer {
         c = s.charAt(0);
         return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
     }
-
 }
